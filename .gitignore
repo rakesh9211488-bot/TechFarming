@@ -1,0 +1,28 @@
+# Installed dependencies and generated output
+node_modules/
+build/
+dist/
+coverage/
+*.log
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*service-account*.json
+Server/Chat/hope-cxdu-0951102ac395.json
+
+# Python environments and cache
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
