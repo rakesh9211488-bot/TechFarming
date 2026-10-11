@@ -2,7 +2,7 @@
 
 ## Active application
 
-The React frontend is built with Vite. The development and preview servers proxy `/api` requests to Express on port 9000. Express uses mysql2 connection pools and a repository layer for account, session, device, telemetry and jobs persistence.
+The React frontend is built with Vite. The development and preview servers proxy `/api` requests to Express on port 9000. Express uses mysql2 connection pools and a repository layer for account, session, device, telemetry and jobs persistence. Connection sessions and driver date serialization use UTC.
 
 ```mermaid
 flowchart TD

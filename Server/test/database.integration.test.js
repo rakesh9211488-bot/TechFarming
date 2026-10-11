@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const mysql = require('mysql2/promise');
+const { createPools } = require('../lib/pools');
 const Repository = require('../lib/repository');
 const { createApp } = require('../app');
 const { readConfig } = require('../Config/runtime');
@@ -9,9 +9,7 @@ test('MySQL-backed signup, durable session, admin job and logout', { skip: proce
   const config = readConfig();
   assert.equal(config.database.users, 'techfarming_users_ci');
   assert.equal(config.database.jobs, 'techfarming_jobs_ci');
-  const base = { host: config.database.host, port: config.database.port, user: config.database.user, password: config.database.password, timezone: 'Z' };
-  const users = mysql.createPool({ ...base, database: config.database.users });
-  const jobs = mysql.createPool({ ...base, database: config.database.jobs });
+  const { users, jobs } = createPools(config);
   t.after(async () => { await Promise.all([users.end(), jobs.end()]); });
   const server = createApp(new Repository(users, jobs), config).listen(0, '127.0.0.1');
   await new Promise(resolve => server.once('listening', resolve));
@@ -43,6 +41,9 @@ test('MySQL-backed signup, durable session, admin job and logout', { skip: proce
   const readings = await request(`/api/devices/${device.body.device.id}/readings`, undefined, cookie);
   assert.equal(readings.status, 200);
   assert.equal(readings.body.readings[0].Temperature, 21.5);
+  assert.ok(Math.abs(Date.now() - new Date(readings.body.readings[0].Recorded_At).getTime()) < 10000);
+  const [timezone] = await users.query('SELECT @@session.time_zone AS value');
+  assert.equal(timezone[0].value, '+00:00');
   assert.equal((await request('/api/users/logout', {}, cookie)).status, 200);
   assert.equal((await request('/api/users/me', undefined, cookie)).status, 401);
 });

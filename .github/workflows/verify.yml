@@ -2,7 +2,7 @@ name: Verify TechFarming
 on:
   pull_request:
   push:
-    branches: [master, feat/working-platform-20261011]
+    branches: [master]
 permissions:
   contents: read
 jobs:
@@ -36,9 +36,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.12'
-      - run: npm ci
+      - run: npm run setup
+      - run: npm audit --audit-level=moderate
         working-directory: Server
-      - run: npm ci
+      - run: npm audit --audit-level=moderate
         working-directory: client
       - run: node scripts/ci-databases.js
         working-directory: Server

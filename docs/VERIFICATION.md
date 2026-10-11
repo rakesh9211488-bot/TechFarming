@@ -7,7 +7,7 @@ The supported story is: website action → API validation/authentication → acc
 | Check | Result | Practical limit |
 | --- | --- | --- |
 | Backend tests | 18 passed, 0 failed | Uses a test repository for API behavior |
-| MySQL integration test | Pending CI | No local MySQL server is available here |
+| MySQL integration test | Passed in GitHub CI | Isolated MySQL 8.4 service |
 | Frontend production build | Passed | Not a production hosting deployment |
 | Browser signup/login/logout | Passed | Test-only in-memory repository |
 | Browser session after refresh | Passed | MySQL persistence is checked separately in CI |
@@ -18,13 +18,17 @@ The supported story is: website action → API validation/authentication → acc
 | Browser JavaScript errors | 0 in tested journeys | Cannot guarantee every possible environment |
 | npm dependency audits | 0 reported vulnerabilities | Point-in-time audit, not a security guarantee |
 
+## Database-backed GitHub result
+
+The full-stack run passed: migrations applied twice, all 19 backend tests passed, and both Playwright browser tests passed against the real API/MySQL service. Evidence: https://github.com/rakesh9211488-bot/TechFarming/actions/runs/38179186030. Subsequent changes must also pass their own checks.
+
 ## Automated verification
 
 `.github/workflows/verify.yml` installs from lockfiles, starts an isolated MySQL 8.4 service, applies migrations twice, runs backend tests including MySQL persistence, builds the frontend and runs Playwright browser checks. Its database credentials are disposable public CI fixture values, not application secrets.
 
 The MySQL integration test covers signup, uniqueness, persisted sessions through a fresh repository instance, administrator jobs, device reporting and logout. Browser tests cover the normal account journey and mobile navigation using the real API and CI database.
 
-The workflow must complete successfully before claiming those database-backed checks passed. Current GitHub results should be reviewed directly in the pull request.
+The workflow must complete successfully before claiming those database-backed checks passed. Review the latest GitHub results directly in the pull request. The successful linked run verifies its own commit; it does not guarantee all future changes.
 
 ## Still needs physical or production verification
 

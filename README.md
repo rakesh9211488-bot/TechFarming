@@ -27,15 +27,14 @@ The current build and local API/browser tests pass. See [verification evidence a
 
 ## Run locally
 
-Use **Node.js 22.12 or newer** and MySQL. Install dependencies separately in `Server` and `client`, configure `Server/.env`, and apply the reviewed migrations before starting the API.
+Use **Node.js 22.12 or newer** and MySQL. Run setup, configure `Server/.env`, and apply the reviewed migrations before starting.
 
 ```powershell
 # From the repository root
-npm --prefix Server ci
-npm --prefix client ci
+npm run setup
 ```
 
-Then follow [the setup guide](docs/SETUP.md). The API runs on port 9000 and the website on port 3000. Configuration and real credentials stay outside Git.
+Then follow [the setup guide](docs/SETUP.md). After database setup, `npm run dev` starts both services in one terminal. The API runs on port 9000 and the website on port 3000. Configuration and real credentials stay outside Git.
 
 ## Documentation
 

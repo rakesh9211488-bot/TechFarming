@@ -24,11 +24,10 @@ A pull request branch must be checked out explicitly until it is merged; cloning
 ## 3. Install dependencies
 
 ```powershell
-npm --prefix Server ci
-npm --prefix client ci
+npm run setup
 ```
 
-Install inside these applications, not at the repository root. Keep both lockfiles committed. The root deployment-helper package is historical and is not required to start either application.
+The setup helper installs both applications from their lockfiles. Keep all lockfiles committed. Root scripts coordinate the applications without adding another runtime dependency.
 
 ## 4. Configure and migrate MySQL
 
@@ -51,27 +50,21 @@ cd ..
 
 The migration plan is read-only. Applying migrations changes the configured schemas, so review them first. MySQL-backed integration tests are restricted to disposable CI schemas; the normal local test command skips that one integration test.
 
-## 5. Start the API
+## 5. Start both services
 
-In the first PowerShell terminal, from the repository root:
+From the repository root, use one PowerShell terminal:
 
 ```powershell
-cd Server
 npm run dev
 ```
 
-Expected listener: `http://127.0.0.1:9000`. Readiness at `/api/health` checks the required database tables, not just whether the HTTP server is running.
+This starts the API and Vite together. Open **http://localhost:3000**. Keep `CLIENT_ORIGIN=http://localhost:3000` in Server/.env for that browser address. Opening `127.0.0.1:3000` requires the corresponding exact origin instead.
 
-## 6. Start the website
+The local helper coordinates the API port with Vite's proxy, and stops both services when you press Ctrl+C. The API's `/api/health` endpoint checks the required database tables.
 
-In a second terminal, from the repository root:
+## 6. Alternative separate terminals
 
-```powershell
-cd client
-npm start
-```
-
-Open **http://localhost:3000**. The Vite server proxies `/api` to the local API. Keep `CLIENT_ORIGIN=http://localhost:3000` in the backend configuration when using that browser address. Opening `127.0.0.1:3000` instead requires a matching CLIENT_ORIGIN setting; exact origins intentionally differ.
+If troubleshooting, start `npm run dev` inside Server in one terminal and `npm start` inside client in another. These use the default API port 9000 unless the frontend's TF_API_TARGET is explicitly configured.
 
 ## 7. Check the complete user journey
 
@@ -90,7 +83,7 @@ Use your real reviewed account and schema names. Roles cannot be set by signup r
 ## 8. Build and stop
 
 ```powershell
-npm --prefix client run build
+npm run build
 ```
 
-Stop each development terminal with Ctrl+C. For local preview of an existing build, use `npm --prefix client run preview` while the API remains running. Production deployment needs HTTPS, a matching HTTPS origin and a deliberate hosting configuration; the preview command is not a production hosting plan.
+Stop the combined process with Ctrl+C. For local preview of an existing build, use `npm run preview`, which starts the API and preview together. Production deployment needs HTTPS, a matching HTTPS origin and a deliberate hosting configuration; the preview command is not a production hosting plan.

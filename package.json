@@ -1,5 +1,16 @@
 {
-  "devDependencies": {
-    "gh-pages": "^6.0.0"
-  }
+  "name": "techfarming",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Connected agriculture website, authenticated API and device reporting",
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "dev": "node scripts/dev.js",
+    "preview": "node scripts/dev.js --preview",
+    "build": "npm --prefix client run build",
+    "test": "npm --prefix Server test",
+    "db:plan": "node Server/scripts/migrate.js --plan",
+    "db:migrate": "node Server/scripts/migrate.js"
+  },
+  "engines": { "node": ">=22.12" }
 }
