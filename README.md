@@ -34,7 +34,7 @@ Use **Node.js 22.12 or newer** and MySQL. Run setup, configure `Server/.env`, an
 npm run setup
 ```
 
-Then follow [the setup guide](docs/SETUP.md). After database setup, `npm run dev` starts both services in one terminal. The API runs on port 9000 and the website on port 3000. Configuration and real credentials stay outside Git.
+Then follow [the setup guide](docs/SETUP.md). After database setup, `npm run dev` starts both services in one terminal. The API runs on port 9000 and the website on port 3001, leaving CareerOrbit’s port 3000 free. Configuration and real credentials stay outside Git.
 
 ## Documentation
 

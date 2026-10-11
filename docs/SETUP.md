@@ -50,6 +50,8 @@ cd ..
 
 The migration plan is read-only. Applying migrations changes the configured schemas, so review them first. MySQL-backed integration tests are restricted to disposable CI schemas; the normal local test command skips that one integration test.
 
+TechFarming uses website port **3001**, leaving CareerOrbit’s port 3000 free.
+
 ## 5. Start both services
 
 From the repository root, use one PowerShell terminal:
@@ -58,7 +60,7 @@ From the repository root, use one PowerShell terminal:
 npm run dev
 ```
 
-This starts the API and Vite together. Open **http://localhost:3000**. Keep `CLIENT_ORIGIN=http://localhost:3000` in Server/.env for that browser address. Opening `127.0.0.1:3000` requires the corresponding exact origin instead.
+This starts the API and Vite together. Open **http://localhost:3001**. Keep `CLIENT_ORIGIN=http://localhost:3001` in Server/.env for that browser address. Opening `127.0.0.1:3001` requires the corresponding exact origin instead.
 
 The local helper coordinates the API port with Vite's proxy, and stops both services when you press Ctrl+C. The API's `/api/health` endpoint checks the required database tables.
 

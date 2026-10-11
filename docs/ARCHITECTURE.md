@@ -6,7 +6,7 @@ The React frontend is built with Vite. The development and preview servers proxy
 
 ```mermaid
 flowchart TD
-  UI[React and Vite :3000] --> API[Express API :9000]
+  UI[React and Vite :3001] --> API[Express API :9000]
   API --> Accounts[MySQL accounts and telemetry]
   API --> Jobs[MySQL jobs]
   Device[Device with Bearer key] --> API

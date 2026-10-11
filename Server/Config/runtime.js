@@ -24,7 +24,7 @@ function readConfig(env = process.env) {
     }
     return Number(raw);
   }
-  const origin = env.CLIENT_ORIGIN || 'http://localhost:3000';
+  const origin = env.CLIENT_ORIGIN || 'http://localhost:3001';
   let url;
   try { url = new URL(origin); } catch { throw new Error('Invalid configuration: CLIENT_ORIGIN'); }
   if (!['http:', 'https:'].includes(url.protocol) || url.origin !== origin) {

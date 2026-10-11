@@ -13,7 +13,7 @@ test('defaults to a loopback listener and one frontend origin', () => {
   const config = readConfig(valid);
   assert.equal(config.host, '127.0.0.1');
   assert.equal(config.port, 9000);
-  assert.equal(config.clientOrigin, 'http://localhost:3000');
+  assert.equal(config.clientOrigin, 'http://localhost:3001');
   assert.equal(config.database.password, valid.DB_PASSWORD);
 });
 test('rejects malformed and out-of-range ports', () => {

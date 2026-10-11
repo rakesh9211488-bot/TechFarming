@@ -5,8 +5,8 @@ const root = path.resolve(__dirname, '..');
 const { loadLocalEnvironment, readConfig } = require('../Server/Config/runtime');
 loadLocalEnvironment();
 const config = readConfig();
-if (!['http://localhost:3000', 'http://127.0.0.1:3000'].includes(config.clientOrigin)) {
-  throw new Error('The local helper requires CLIENT_ORIGIN=http://localhost:3000 or http://127.0.0.1:3000.');
+if (!['http://localhost:3001', 'http://127.0.0.1:3001'].includes(config.clientOrigin)) {
+  throw new Error('The local helper requires CLIENT_ORIGIN=http://localhost:3001 or http://127.0.0.1:3001.');
 }
 const vite = path.join(root, 'client/node_modules/vite/bin/vite.js');
 if (!fs.existsSync(vite)) throw new Error('Dependencies missing. Run npm run setup first.');
@@ -16,7 +16,7 @@ const host = address.includes(':') ? `[${address}]` : address;
 const target = `http://${host}:${config.port}`;
 const definitions = [
   { folder: 'Server', args: [...(preview ? [] : ['--watch']), 'server.js'] },
-  { folder: 'client', args: [vite, ...(preview ? ['preview'] : []), '--host', '127.0.0.1', '--port', '3000', '--strictPort'] },
+  { folder: 'client', args: [vite, ...(preview ? ['preview'] : []), '--host', '127.0.0.1', '--port', '3001', '--strictPort'] },
 ];
 let stopping = false;
 const children = [];
