@@ -1,40 +1,64 @@
 # TechFarming
 
-An agriculture technology prototype combining a React website, an Express/MySQL backend, and experimental IoT and rover sketches.
+**A connected-agriculture workspace built with React, Express and MySQL.**
 
-Maintained by **Rakesh Siripaka**. Original contributor history and the `Collaborator` file are preserved.
+TechFarming brings account access, project opportunities, a searchable sample agriculture catalog and device reporting into one responsive interface. Experimental Arduino and rover work is preserved alongside the website.
 
-## Project status
+Maintained by **Rakesh Siripaka**. Original contributors and commit history are preserved. CareerOrbit is a separate project.
 
-This is a development prototype. It is not ready for public deployment or autonomous hardware operation.
+![TechFarming home page](docs/screenshots/home.jpg)
 
-| Area | Current implementation | Remaining work |
-| --- | --- | --- |
-| Website | React pages for farming information, products, accounts and dashboards | Validate complete user journeys and accessibility |
-| Backend | Express routes for users, sellers, jobs and products | Authentication sessions, mutation authorization, input validation and migration testing against MySQL |
-| Soil monitoring | Sensor sketch with placeholder readings | Implement sensor drivers, calibration and ingestion endpoint |
-| Rover | Motor movement helpers and a draft control loop | Confirm hardware, command handling and safety controls |
-| Image processing | Experimental Python scripts and an API route | Repair integration paths and validate model behavior |
+## Available features
 
-## Repository map
+- Validated signup and sign-in with database-backed, expiring cookie sessions.
+- Session recovery after refresh, logout and administrator authorization.
+- Administrator job publishing and searchable public listings.
+- Searchable sample product catalog, clearly labeled as demonstration data.
+- Account-scoped device registration, one-time device keys and key rotation.
+- Validated temperature, humidity, moisture and pH reporting through a device-authenticated API.
+- Recent device reports with timestamps and units, plus loading, empty and error states.
+- Responsive navigation, labeled forms, keyboard focus and reduced-motion support.
 
-| Directory | Purpose |
+## Scope and status
+
+This is a development platform, not a completed commercial agriculture service. Catalog purchasing, seller accounts, payments, image classification and rover control are not active. Physical sensor calibration and hardware operation require verification. Device registration does not prove a sensor is connected.
+
+The current build and local API/browser tests pass. See [verification evidence and remaining limits](docs/VERIFICATION.md) for the distinction between simulated test storage, real MySQL checks and physical hardware.
+
+## Run locally
+
+Use **Node.js 22.12 or newer** and MySQL. Install dependencies separately in `Server` and `client`, configure `Server/.env`, and apply the reviewed migrations before starting the API.
+
+```powershell
+# From the repository root
+npm --prefix Server ci
+npm --prefix client ci
+```
+
+Then follow [the setup guide](docs/SETUP.md). The API runs on port 9000 and the website on port 3000. Configuration and real credentials stay outside Git.
+
+## Documentation
+
+| Guide | Purpose |
 | --- | --- |
-| `client/` | React frontend and its dependency lockfile |
-| `Server/` | Express backend, Python experiments and Arduino sketches |
-| `Database/` | Versioned account/jobs migrations and historical SQL examples |
-| `docs/` | Setup, architecture, hardware notes and implementation roadmap |
+| [Setup](docs/SETUP.md) | Windows installation and startup |
+| [Database](docs/DATABASE.md) | Versioned migrations, backups and recovery |
+| [Authentication](docs/AUTHENTICATION.md) | Sessions, permissions and credentials |
+| [Device API](docs/DEVICE-API.md) | Device registration and reporting contract |
+| [Architecture](docs/ARCHITECTURE.md) | Application boundaries |
+| [Hardware](docs/HARDWARE.md) | Original sketches and remaining implementation |
+| [Verification](docs/VERIFICATION.md) | Tests and practical limits |
+| [Roadmap](docs/ROADMAP.md) | Next development stages |
 
-## Start here
+## Repository structure
 
-- [Local setup](docs/SETUP.md)
-- [Database setup and migration recovery](docs/DATABASE.md)
-- [Architecture and integration gaps](docs/ARCHITECTURE.md)
-- [Hardware development notes](docs/HARDWARE.md)
-- [Development roadmap](docs/ROADMAP.md)
-- [Contributing](CONTRIBUTING.md)
-- [Security and credential handling](SECURITY.md)
+| Directory | Contents |
+| --- | --- |
+| `client/` | React interface, Vite build and frontend lockfile |
+| `Server/` | Express API, configuration, repository layer and tests |
+| `Database/migrations/` | Account, session, device, telemetry and jobs migrations |
+| `Server/ArduinoCode/` | Original experimental sensor and rover sketches |
+| `Server/Python/` | Original experimental image-processing scripts |
+| `.github/workflows/` | Automated build, API, MySQL and browser verification |
 
-Dependencies are installed separately inside `client` and `Server`. Generated dependencies are not source code; use the committed lockfiles to restore them.
-
-CareerOrbit is maintained as a separate project.
+Read [Contributing](CONTRIBUTING.md) and [Security](SECURITY.md) before changing or deploying the project. No new project-wide license is introduced by this update.

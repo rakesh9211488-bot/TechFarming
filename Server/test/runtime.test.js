@@ -29,3 +29,8 @@ test('rejects wildcard origins, credentials and paths', () => {
   }
   assert.equal(readConfig({ ...valid, CLIENT_ORIGIN: 'https://example.com' }).clientOrigin, 'https://example.com');
 });
+
+test('production requires HTTPS and secure cookies', () => {
+  assert.throws(() => readConfig({ ...valid, NODE_ENV: 'production' }), /HTTPS/);
+  assert.equal(readConfig({ ...valid, NODE_ENV: 'production', CLIENT_ORIGIN: 'https://example.com' }).secureCookies, true);
+});

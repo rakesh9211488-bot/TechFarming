@@ -1,0 +1,10 @@
+CREATE TABLE user_devices (
+  ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  User_ID BIGINT UNSIGNED NOT NULL,
+  Name VARCHAR(100) NOT NULL,
+  Token_Hash CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  Last_Seen DATETIME(3) NULL,
+  UNIQUE KEY uq_device_token (Token_Hash),
+  KEY idx_device_owner (User_ID),
+  CONSTRAINT fk_device_user FOREIGN KEY (User_ID) REFERENCES user_sign_up(ID) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -30,10 +30,14 @@ function readConfig(env = process.env) {
   if (!['http:', 'https:'].includes(url.protocol) || url.origin !== origin) {
     throw new Error('CLIENT_ORIGIN must be an HTTP(S) origin without a path.');
   }
+  if (env.NODE_ENV === 'production' && url.protocol !== 'https:') {
+    throw new Error('Production CLIENT_ORIGIN must use HTTPS.');
+  }
   return {
     port: port('PORT', 9000),
     host: env.HOST || '127.0.0.1',
     clientOrigin: origin,
+    secureCookies: env.NODE_ENV === 'production',
     database: {
       host: env.DB_HOST.trim(),
       port: port('DB_PORT', 3306),

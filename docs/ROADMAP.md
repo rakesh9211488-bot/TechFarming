@@ -1,36 +1,25 @@
 # Development roadmap
 
-## 1. Repository foundation
+## Completed in the integration branch
 
-Document the current prototype, preserve contributor history, remove generated dependencies from tracked source and keep credentials outside Git.
+Repository documentation and cleanup; explicit environment configuration; versioned account/jobs/device schema; persisted sessions and logout; administrator job publishing; searchable sample catalog; device keys, validated reports and owner isolation; responsive website pages; unit/API tests and full-stack CI configuration.
 
-## 2. Secure and reproducible backend
+## Before production
 
-- Revoke the previously exposed service-account key.
-- Move configuration to validated environment variables with a placeholder example file.
-- Build database migrations matching the account, products and jobs models.
-- Implement sessions, authorization, safe response fields and request validation.
-- Remove password and personal-data logging; restrict CORS.
-- Repair product persistence, job creation and Python invocation.
+1. Revoke the previously exposed Google service-account key.
+2. Confirm the full MySQL/browser CI checks pass and test the Windows setup on the target machine.
+3. Configure HTTPS hosting, a matching origin, least-privilege database credentials and deployment-specific proxy/rate limits.
+4. Verify backups and restore, error monitoring, telemetry retention and storage capacity.
+5. Implement email verification, password recovery and account-management requirements.
 
-Acceptance: a clean checkout can install, migrate and run using documented local configuration; account and authorization tests pass.
+## Physical IoT
 
-## 3. Complete website journeys
+Confirm controller and sensor part numbers, wiring and voltages. Implement/calibrate supported sensor drivers, update firmware to the authenticated JSON contract, and record network/reconnect tests. Never substitute invented readings for absent measurements.
 
-Validate registration, login, dashboard, product browsing and jobs flows. Add clear loading, empty and error states, accessible controls and responsive layouts. Audit dependencies before deployment.
+## Rover and image processing
 
-Acceptance: documented browser tests demonstrate each supported journey without manual database edits.
+Develop these as separate verified features. Add emergency stopping and communication-loss behavior before rover operation. Train and evaluate image models against a documented dataset before enabling their API.
 
-## 4. Real IoT integration
+## Commerce
 
-Confirm hardware, implement sensor drivers and calibration, add device credentials and telemetry persistence, then display real readings with timestamps and units.
-
-Acceptance: a real device submits validated readings and reconnects reliably; rejected or stale readings are visible as such.
-
-## 5. Rover and image experiments
-
-Develop these independently from the website. Add command safety, emergency stopping and recorded hardware tests. Validate image models against a documented dataset and report their limitations.
-
-## 6. Deployment
-
-Choose hosting only after the earlier acceptance checks pass. Add automated checks, least-privilege credentials, monitoring, database backups and a tested restore procedure.
+Seller accounts, real products, inventory, cart, orders, payment processing and refunds require a separately designed schema and complete transaction workflows. The current sample catalog does not represent a functioning store.

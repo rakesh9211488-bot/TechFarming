@@ -18,8 +18,10 @@ The draft references an Adafruit Motor Shield, two motors, a camera servo and se
 
 1. Record board and sensor part numbers, wiring and power requirements.
 2. Compile and test each sensor separately; document calibration and units.
-3. Define validated telemetry fields and implement an authenticated ingestion endpoint.
+3. Update firmware to the implemented authenticated JSON reporting contract in DEVICE-API.md.
 4. Test reconnect behavior, timeouts and duplicate readings.
 5. Test rover movement with wheels lifted and add an emergency stop and communication-loss stop before field operation.
 
 Do not describe these sketches as validated autonomous farming hardware until the corresponding tests are recorded.
+
+The server reporting API now exists. The original sketch is still experimental and has not been compiled or verified for a confirmed physical board.

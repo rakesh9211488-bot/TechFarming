@@ -1,70 +1,96 @@
-# Local development
+# Local setup on Windows
 
-## Requirements
+## 1. Requirements
 
-Install Git, Node.js 22 or newer with npm, and MySQL. Node is required for the built-in environment-file loader. The legacy dependency set still needs compatibility validation; backend bcrypt may require native build tools if a compatible prebuilt binary is unavailable.
+Install Git, Node.js 22.12 or newer with npm, and MySQL. Use a dedicated local development database account. The active backend uses bcryptjs and no longer requires a native bcrypt binary.
 
-Keep this prototype on a trusted local development machine. Read [SECURITY.md](../SECURITY.md) before supplying credentials or exposing ports.
+Check tools in PowerShell:
 
-## 1. Clone
+```powershell
+node --version
+npm --version
+git --version
+```
+
+## 2. Get the reviewed code
 
 ```powershell
 git clone https://github.com/rakesh9211488-bot/TechFarming.git
 cd TechFarming
 ```
 
-## 2. Install dependencies
+A pull request branch must be checked out explicitly until it is merged; cloning master alone will not include an unmerged update. Use the branch shown in the review pull request if testing that version.
+
+## 3. Install dependencies
 
 ```powershell
-cd client
-npm ci
-cd ..\Server
-npm ci
+npm --prefix Server ci
+npm --prefix client ci
+```
+
+Install inside these applications, not at the repository root. Keep both lockfiles committed. The root deployment-helper package is historical and is not required to start either application.
+
+## 4. Configure and migrate MySQL
+
+Follow [DATABASE.md](DATABASE.md) to back up an older database, create isolated development schemas and grant the local application account its required permissions.
+
+```powershell
+Copy-Item Server\.env.example Server\.env
+notepad Server\.env
+```
+
+Supply the real local database settings. Never commit this file. Existing process environment variables take precedence over its values.
+
+```powershell
+cd Server
+node scripts/migrate.js --plan
+node scripts/migrate.js
+npm test
 cd ..
 ```
 
-The root package only declares a deployment helper; it is not the frontend or backend application. Keep all package lockfiles committed. Do not use `npm audit fix --force` without reviewing breaking changes.
+The migration plan is read-only. Applying migrations changes the configured schemas, so review them first. MySQL-backed integration tests are restricted to disposable CI schemas; the normal local test command skips that one integration test.
 
-## 3. Configure and migrate the database
+## 5. Start the API
 
-Follow [the database setup guide](DATABASE.md) to back up an existing database, create isolated development schemas, configure `Server/.env`, review the migration plan and apply it.
-
-The versioned migrations create the account and jobs tables expected by the current routes. Older SQL examples are not a complete commerce schema. Configuration alone does not create tables.
-
-The backend defaults to `127.0.0.1:9000`. `CLIENT_ORIGIN` accepts one exact origin such as `http://localhost:3000`, without a trailing slash. Public account-listing routes remain disabled until authenticated authorization is implemented.
-
-## 4. Start the backend
-
-In a PowerShell terminal at the repository root:
+In the first PowerShell terminal, from the repository root:
 
 ```powershell
 cd Server
 npm run dev
 ```
 
-The backend listens on port 9000. `npm start` runs it without the development watcher.
+Expected listener: `http://127.0.0.1:9000`. Readiness at `/api/health` checks the required database tables, not just whether the HTTP server is running.
 
-## 5. Start the frontend
+## 6. Start the website
 
-In a second PowerShell terminal at the repository root:
+In a second terminal, from the repository root:
 
 ```powershell
 cd client
 npm start
 ```
 
-Open `http://localhost:3000`. The frontend development proxy targets `http://localhost:9000`.
+Open **http://localhost:3000**. The Vite server proxies `/api` to the local API. Keep `CLIENT_ORIGIN=http://localhost:3000` in the backend configuration when using that browser address. Opening `127.0.0.1:3000` instead requires a matching CLIENT_ORIGIN setting; exact origins intentionally differ.
 
-## 6. Validate incrementally
+## 7. Check the complete user journey
 
-```powershell
-# From Server: syntax check only
-node --check server.js
-node --test test/runtime.test.js test/migrations.test.js
-# From client: attempt the production build
-npm run build
+Create an account, sign in, refresh the workspace and sign out. Browse the catalog and jobs. Register a test device only if you are ready to keep its one-time key private.
+
+A fresh database has no jobs. Regular users cannot publish jobs. An administrator may promote an existing local account using MySQL after verifying its email:
+
+```sql
+UPDATE techfarming_users_dev.user_sign_up
+SET Role = 'admin'
+WHERE Email = 'your-verified-local-account@example.com';
 ```
 
-These commands do not prove database, authentication or hardware functionality. The server's existing `npm test` script is a failing placeholder. Document actual test results when repairing each feature.
+Use your real reviewed account and schema names. Roles cannot be set by signup requests. An administrator sees the job-publishing form in the workspace.
 
-Stop each development process with Ctrl+C. No cloud service-account key is needed merely to view the frontend; integrations requiring credentials need separate implementation and secure configuration.
+## 8. Build and stop
+
+```powershell
+npm --prefix client run build
+```
+
+Stop each development terminal with Ctrl+C. For local preview of an existing build, use `npm --prefix client run preview` while the API remains running. Production deployment needs HTTPS, a matching HTTPS origin and a deliberate hosting configuration; the preview command is not a production hosting plan.

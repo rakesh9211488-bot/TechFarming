@@ -1,0 +1,38 @@
+const { test, expect } = require('@playwright/test');
+test('account journey, durable session, catalog and logout', async ({ page }) => {
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Technology rooted in better farming.' })).toBeVisible();
+  await page.getByRole('link', { name: 'Create an account', exact: true }).click();
+  await page.getByLabel('Name', { exact: true }).fill('Browser CI Farmer');
+  const email = `browser-${Date.now()}@example.com`;
+  await page.getByLabel('Email', { exact: true }).fill(email);
+  await page.getByLabel('Password', { exact: true }).fill('Browser-Test123');
+  await page.getByLabel('Confirm password').fill('Browser-Test123');
+  await page.getByRole('button', { name: 'Create account', exact: true }).click();
+  await expect(page.getByText('Your account is ready.', { exact: false })).toBeVisible();
+  await page.getByRole('link', { name: 'Sign in', exact: true }).click();
+  await page.getByLabel('Email', { exact: true }).fill(email);
+  await page.getByLabel('Password', { exact: true }).fill('Browser-Test123');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Welcome, Browser CI Farmer.' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Welcome, Browser CI Farmer.' })).toBeVisible();
+  await page.getByRole('link', { name: 'Catalog', exact: true }).click();
+  await page.getByRole('searchbox').fill('NPK');
+  await expect(page.getByRole('heading', { name: 'NPK Fertilizer' })).toBeVisible();
+  await page.getByRole('link', { name: 'Workspace' }).click();
+  await page.getByRole('button', { name: 'Sign out', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Your workspace starts here.' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Your workspace starts here.' })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+test('mobile navigation and layout', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Technology rooted in better farming.' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+  await page.getByRole('link', { name: 'Jobs', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Jobs and opportunities' })).toBeVisible();
+});

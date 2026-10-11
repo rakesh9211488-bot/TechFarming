@@ -1,26 +1,35 @@
 # Architecture
 
-## Existing application
+## Active application
 
-The React frontend uses Create React App. Its development server proxies API requests to the Express backend on port 9000. The backend connects directly to MySQL and includes product-file and Python processing experiments.
+The React frontend is built with Vite. The development and preview servers proxy `/api` requests to Express on port 9000. Express uses mysql2 connection pools and a repository layer for account, session, device, telemetry and jobs persistence.
 
 ```mermaid
 flowchart TD
-  Browser[React frontend :3000] --> API[Express backend :9000]
-  API --> DB[MySQL user_db and job]
-  API --> Files[Product files and Python experiments]
-  Sensors[Draft sensor firmware] -. Missing ingestion endpoint .-> API
+  UI[React and Vite :3000] --> API[Express API :9000]
+  API --> Accounts[MySQL accounts and telemetry]
+  API --> Jobs[MySQL jobs]
+  Device[Device with Bearer key] --> API
 ```
 
-## Boundaries and known gaps
+The catalog reads the existing sample Products.json from an absolute path resolved against the server directory. It is not live inventory and does not support purchases. Original Python experiments and rover sketches remain in the repository but are not invoked as working services.
 
-- User login checks a password hash but does not establish a complete authenticated session. Dependencies for JWT or sessions do not establish that those features are implemented.
-- Public user and seller collection routes are disabled. Implement authenticated authorization before providing account-management APIs.
-- Database settings load from `Server/.env` or the process environment. The backend defaults to a loopback listener and restricts browser CORS to one configured frontend origin. CORS is not authentication.
-- Versioned migrations now create the tables expected by account and jobs routes. Historical SQL examples remain separate; commerce and telemetry schemas are not implemented.
-- Job creation references undefined values; product file paths and capitalization need correction.
-- The image classification route needs path, upload and subprocess output handling fixes.
-- The soil sketch posts to a placeholder `/api/soil-data` endpoint that is not implemented in this server.
-- Rover commands, device identity, telemetry persistence and hardware safety behavior remain unimplemented.
+## Supported boundaries
 
-This documentation describes the committed legacy application. It does not claim that a replacement platform or production deployment has been completed.
+| Boundary | Implementation |
+| --- | --- |
+| Accounts | Validated signup, bcrypt password hashing and safe profile responses |
+| Sessions | Hashed random tokens, expiry and persistent MySQL storage |
+| Jobs | Public read, authenticated administrator write |
+| Devices | Per-owner registration, hashed keys, rotation and scoped history |
+| Readings | Validated metrics and transactional reading/last-seen writes |
+| Database setup | Versioned SQL, checksums, advisory locks and explicit recovery |
+| Frontend | Accessible forms, navigation, loading/error states and responsive layouts |
+
+The readiness endpoint verifies the required tables. Controlled API errors return JSON without raw database details or secrets.
+
+## Development-only limitations
+
+Physical hardware, calibration, commerce, payments, seller accounts, email services and rover/image functionality require separate implementation. Authentication rate limiting is local to one process. Production scaling, telemetry retention, observability and recovery drills remain further work.
+
+Existing legacy UI source is preserved for reference, but the active router exposes only supported pages. Removed dependency packages belonged to the retired active UI or unused backend integrations; restoring those experiments requires their own reviewed dependency setup.
