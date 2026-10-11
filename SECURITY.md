@@ -10,6 +10,6 @@ The account owner must revoke the exposed key in Google Cloud, review its permis
 
 ## Known application risks
 
-The legacy server contains database configuration in source, permissive CORS, routes exposing account records, sensitive request logging and incomplete authentication sessions. Remediation is tracked in [the roadmap](docs/ROADMAP.md).
+Database credentials now come from local environment configuration. Public account-listing routes are disabled, browser CORS is restricted to a configured origin, and credential-bearing request logging has been removed. Authentication sessions, authorization for mutation routes, rate limits and comprehensive input validation remain incomplete. Remediation is tracked in [the roadmap](docs/ROADMAP.md).
 
 Report security issues privately to the repository maintainer using an available private contact channel. Do not include live credentials or personal data in public reports.

@@ -7,11 +7,14 @@ const bodyParser = require('body-parser');
 const { spawn } = require('child_process');
 const fs = require('fs');
 
+const { loadLocalEnvironment, readConfig } = require('./Config/runtime');
+loadLocalEnvironment();
+const config = readConfig();
 const app = express();
-const port = 9000;
+const port = config.port;
 const saltRounds = 10;
-app.use(cors());
-app.use(express.json());
+app.use(cors({ origin: config.clientOrigin }));
+app.use(express.json({ limit: '1mb' }));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -46,10 +49,11 @@ app.post('/classify-image', (req, res) => {
 
 //Generating connection between server and Database
 const dbUser = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'user_db',
+  host: config.database.host,
+  port: config.database.port,
+  user: config.database.user,
+  password: config.database.password,
+  database: config.database.users,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -65,37 +69,16 @@ dbUser.connect((err) => {
   console.log('Connected to MySQL');
 });
 
-//Printing information from the database through the generated url
-//Counselling information from the database to the server
-app.get('/api/users', (req, res) => {
-  dbUser.query('SELECT * FROM user_sign_up', (err, results) => {
-    if (err) {
-      console.error('Error fetching users:', err);
-      res.status(500).json({ error: 'Internal server error' });
-      return;
-    }
-    res.json(results);
-  });
-});
-
-//Printing information from the database through the generated url
-//Counselling information from the database to the server
-app.get('/api/sellers', (req, res) => {
-  dbUser.query('SELECT * FROM seller_sign_up', (err, results) => {
-    if (err) {
-      console.error('Error fetching users:', err);
-      res.status(500).json({ error: 'Internal server error' });
-      return;
-    }
-    res.json(results);
-  });
+// Account collections remain disabled until authenticated authorization exists.
+// Never expose password hashes or seller contact records through public routes.
+app.get(['/api/users', '/api/sellers'], (req, res) => {
+  res.status(403).json({ error: 'Account listing is unavailable.' });
 });
 
 //Getting user sign up details
 //Only for user sign up not seller
 app.post('/api/users/signup', async (req, res) => {
   const { name, email, dob, gender, password } = req.body;
-  console.log('Received Data:', req.body);
 
   bcrypt.hash(password, saltRounds, (err, hash) => {
     if (err) {
@@ -123,7 +106,6 @@ app.post('/api/users/signup', async (req, res) => {
 //Getting seller sign up details
 app.post('/api/sellers/signup', async (req, res) => {
   const { name, companyName, phoneNumber, website, email, productCategory, logo, address } = req.body;
-  console.log('Received Data:', req.body);
 
   const sql = 'INSERT INTO seller_sign_up ( Name, Company_Name, Logo, Website, Product_category, Email, Phone_Number, Address) VAlUES (?,?,?,?,?,?,?,?)';
   const values = [name, companyName, logo, website, productCategory, email, phoneNumber, address];
@@ -136,7 +118,7 @@ app.post('/api/sellers/signup', async (req, res) => {
   dbUser.query(sql, values, (err, results) => {
     if (err) {
       console.error('Error inserting user data into database:', err);
-      res.status(500).json({ error: 'Internal server error', details: err.message });
+      res.status(500).json({ error: 'Internal server error' });
       return;
     }
 
@@ -156,7 +138,6 @@ function generateRandomCode() {
 
 app.post('/api/users/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('Received Login Data:', req.body);
 
   // Query the database to retrieve the hashed password for the provided email
   const sql = 'SELECT Password FROM user_sign_up WHERE Email = ?';
@@ -191,10 +172,11 @@ app.post('/api/users/login', async (req, res) => {
 
 //Generating jobs list from database 
 const dbJobs = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'job',
+  host: config.database.host,
+  port: config.database.port,
+  user: config.database.user,
+  password: config.database.password,
+  database: config.database.jobs,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -361,6 +343,6 @@ app.get('/api/add-job', (req, res) => {
 
 //checking the port number of the server
 //Returning the port number
-app.listen(port, () => {
+app.listen(port, config.host, () => {
   console.log(`Server is running on port ${port}`);
 });

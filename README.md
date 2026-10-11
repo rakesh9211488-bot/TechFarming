@@ -11,7 +11,7 @@ This is a development prototype. It is not ready for public deployment or autono
 | Area | Current implementation | Remaining work |
 | --- | --- | --- |
 | Website | React pages for farming information, products, accounts and dashboards | Validate complete user journeys and accessibility |
-| Backend | Express routes for users, sellers, jobs and products | Authentication sessions, authorization, input validation and database migrations |
+| Backend | Express routes for users, sellers, jobs and products | Authentication sessions, mutation authorization, input validation and database migrations |
 | Soil monitoring | Sensor sketch with placeholder readings | Implement sensor drivers, calibration and ingestion endpoint |
 | Rover | Motor movement helpers and a draft control loop | Confirm hardware, command handling and safety controls |
 | Image processing | Experimental Python scripts and an API route | Repair integration paths and validate model behavior |

@@ -15,7 +15,8 @@ flowchart TD
 ## Boundaries and known gaps
 
 - User login checks a password hash but does not establish a complete authenticated session. Dependencies for JWT or sessions do not establish that those features are implemented.
-- Public user and seller routes need authorization and response field restrictions before deployment.
+- Public user and seller collection routes are disabled. Implement authenticated authorization before providing account-management APIs.
+- Database settings load from `Server/.env` or the process environment. The backend defaults to a loopback listener and restricts browser CORS to one configured frontend origin. CORS is not authentication.
 - SQL examples and route table expectations are inconsistent. A migration set is required.
 - Job creation references undefined values; product file paths and capitalization need correction.
 - The image classification route needs path, upload and subprocess output handling fixes.

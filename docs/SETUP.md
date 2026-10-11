@@ -2,7 +2,7 @@
 
 ## Requirements
 
-Install Git, Node.js with npm, and MySQL. This legacy dependency set has no documented, verified Node version. Check dependency compatibility before selecting a runtime; backend bcrypt may require native build tools if a compatible prebuilt binary is unavailable.
+Install Git, Node.js 22 or newer with npm, and MySQL. Node is required for the built-in environment-file loader. The legacy dependency set still needs compatibility validation; backend bcrypt may require native build tools if a compatible prebuilt binary is unavailable.
 
 Keep this prototype on a trusted local development machine. Read [SECURITY.md](../SECURITY.md) before supplying credentials or exposing ports.
 
@@ -27,11 +27,20 @@ The root package only declares a deployment helper; it is not the frontend or ba
 
 ## 3. Understand the database gap
 
-`Server/server.js` currently connects to local MySQL using database names `user_db` and `job`, with credentials embedded in the source. Do not reuse privileged credentials outside an isolated development environment.
+Create the local configuration file:
+
+```powershell
+Copy-Item Server\.env.example Server\.env
+notepad Server\.env
+```
+
+Set `DB_USER` and `DB_PASSWORD` to a dedicated local MySQL account, and set the database names to your local schemas. Do not paste passwords into GitHub or commit `Server/.env`. Existing process environment variables take precedence over the file. Missing database settings stop startup with a configuration error.
+
+The listener defaults to `127.0.0.1:9000`. `CLIENT_ORIGIN` accepts one exact origin, such as `http://localhost:3000`, without a trailing slash. Public account-listing routes are disabled until authenticated authorization is implemented.
 
 The SQL examples in `Database/` do not recreate the schema expected by all routes. In particular, `Membership.sql` creates `users`, while the server's account routes expect `user_sign_up`; jobs use `jods_list`. A complete migration set must be implemented before reliable account and jobs testing is possible. Creating empty databases alone does not resolve missing tables.
 
-The server does not yet load database settings from `.env`; adding an environment file alone will not configure these connections.
+Configuration does not create database tables. The missing migration set remains a separate implementation task.
 
 ## 4. Start the backend
 
@@ -60,6 +69,7 @@ Open `http://localhost:3000`. The frontend development proxy targets `http://loc
 ```powershell
 # From Server: syntax check only
 node --check server.js
+node --test test/runtime.test.js
 # From client: attempt the production build
 npm run build
 ```
