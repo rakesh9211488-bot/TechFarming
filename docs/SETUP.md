@@ -25,22 +25,13 @@ cd ..
 
 The root package only declares a deployment helper; it is not the frontend or backend application. Keep all package lockfiles committed. Do not use `npm audit fix --force` without reviewing breaking changes.
 
-## 3. Understand the database gap
+## 3. Configure and migrate the database
 
-Create the local configuration file:
+Follow [the database setup guide](DATABASE.md) to back up an existing database, create isolated development schemas, configure `Server/.env`, review the migration plan and apply it.
 
-```powershell
-Copy-Item Server\.env.example Server\.env
-notepad Server\.env
-```
+The versioned migrations create the account and jobs tables expected by the current routes. Older SQL examples are not a complete commerce schema. Configuration alone does not create tables.
 
-Set `DB_USER` and `DB_PASSWORD` to a dedicated local MySQL account, and set the database names to your local schemas. Do not paste passwords into GitHub or commit `Server/.env`. Existing process environment variables take precedence over the file. Missing database settings stop startup with a configuration error.
-
-The listener defaults to `127.0.0.1:9000`. `CLIENT_ORIGIN` accepts one exact origin, such as `http://localhost:3000`, without a trailing slash. Public account-listing routes are disabled until authenticated authorization is implemented.
-
-The SQL examples in `Database/` do not recreate the schema expected by all routes. In particular, `Membership.sql` creates `users`, while the server's account routes expect `user_sign_up`; jobs use `jods_list`. A complete migration set must be implemented before reliable account and jobs testing is possible. Creating empty databases alone does not resolve missing tables.
-
-Configuration does not create database tables. The missing migration set remains a separate implementation task.
+The backend defaults to `127.0.0.1:9000`. `CLIENT_ORIGIN` accepts one exact origin such as `http://localhost:3000`, without a trailing slash. Public account-listing routes remain disabled until authenticated authorization is implemented.
 
 ## 4. Start the backend
 
@@ -69,7 +60,7 @@ Open `http://localhost:3000`. The frontend development proxy targets `http://loc
 ```powershell
 # From Server: syntax check only
 node --check server.js
-node --test test/runtime.test.js
+node --test test/runtime.test.js test/migrations.test.js
 # From client: attempt the production build
 npm run build
 ```
