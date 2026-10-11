@@ -1,0 +1,57 @@
+name: Verify TechFarming
+on:
+  pull_request:
+  push:
+    branches: [master]
+permissions:
+  contents: read
+jobs:
+  full-stack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: disposable-ci-password
+          MYSQL_ROOT_HOST: '%'
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      CI: 'true'
+      DB_HOST: 127.0.0.1
+      DB_PORT: '3306'
+      DB_USER: root
+      DB_PASSWORD: disposable-ci-password
+      DB_USERS_DATABASE: techfarming_users_ci
+      DB_JOBS_DATABASE: techfarming_jobs_ci
+      CLIENT_ORIGIN: http://localhost:3001
+      MYSQL_INTEGRATION_TEST: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12'
+      - run: npm run setup
+      - run: npm audit --audit-level=moderate
+        working-directory: Server
+      - run: npm audit --audit-level=moderate
+        working-directory: client
+      - run: node scripts/ci-databases.js
+        working-directory: Server
+      - run: node scripts/migrate.js
+        working-directory: Server
+      - run: node scripts/migrate.js
+        working-directory: Server
+      - run: npm test
+        working-directory: Server
+      - run: npm run build
+        working-directory: client
+      - run: npx playwright install --with-deps chromium
+        working-directory: Server
+      - run: npx playwright test
+        working-directory: Server

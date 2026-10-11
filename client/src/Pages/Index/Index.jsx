@@ -1,15 +1,8 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import '../../Styles/Index.css';
-import Sidebar from '../../Components/Sidebar/Sidebar';
-
-const Index = () => {
-  return (
-    <div>
-        <Sidebar></Sidebar>
-        <Link to='/home'>Home</Link>
-    </div>
-  )
+import { Link } from 'react-router-dom';
+import { FaSeedling, FaMicrochip, FaCompass, FaArrowRight } from 'react-icons/fa';
+export default function Index() {
+  return <>
+    <section className="tf-hero"><div><span className="tf-eyebrow">THE NEXT CHAPTER OF TECHFARMING</span><h1>Technology rooted<br />in better farming.</h1><p>A focused workspace for agriculture information, account access and project development. Built to connect digital tools with the realities of the field.</p><div className="tf-actions"><Link className="tf-button" to="/dashboard">Open your workspace <FaArrowRight aria-hidden="true" /></Link><Link className="tf-link" to="/api/signup/users">Create an account</Link></div></div><aside className="tf-hero-art" aria-label="TechFarming project overview"><FaSeedling aria-hidden="true" /><span>OBSERVE · UNDERSTAND · IMPROVE</span><p>Better decisions begin with<br />better information.</p><small>IoT hardware integration is under development.</small></aside></section>
+    <section className="tf-grid" aria-label="Explore the project">{[{icon:FaSeedling,title:'Explore the catalog',text:'Browse the sample agriculture catalog with clear categories and search.',path:'/products'},{icon:FaCompass,title:'Discover opportunities',text:'Read job listings published by the project administrator.',path:'/jobs'},{icon:FaMicrochip,title:'Understand the technology',text:'See what works today and what the hardware integration still needs.',path:'/about-us'}].map(({icon:Icon,title,text,path})=><Link className="tf-card tf-card-link" key={path} to={path}><Icon aria-hidden="true" /><h2>{title}</h2><p>{text}</p><span>Explore <FaArrowRight aria-hidden="true" /></span></Link>)}</section>
+  </>;
 }
-
-export default Index
